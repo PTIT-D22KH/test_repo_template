@@ -5,10 +5,12 @@ import dao.OrderItemDao;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Properties;
 import models.FoodItem;
 import models.Order;
 import models.OrderItem;
@@ -17,22 +19,41 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 public class PrintOrderController {
 
     XWPFDocument document;
     File orderFile;
     String fileName;
+    String orderFilePath;
     SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     DecimalFormat formatter = new DecimalFormat("###,###,###");
 
     public PrintOrderController() {
         document = new XWPFDocument();
-        orderFile = new File("D:\\Desktop\\Order\\order.docx");
+        loadConfig();
+        orderFile = new File(orderFilePath + "order.docx");
+    }
+
+    private void loadConfig() {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            Properties prop = new Properties();
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+                return;
+            }
+            prop.load(input);
+            orderFilePath = prop.getProperty("orderFilePath");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void print(int id) throws Exception {
-        orderFile = new File("D:\\Desktop\\Order\\order-" + id + ".docx");
+        orderFile = new File(orderFilePath + "order-" + id + ".docx");
         OrderDao orderDao = new OrderDao();
         OrderItemDao orderItemDao = new OrderItemDao();
         Order order = orderDao.get(id);
@@ -73,10 +94,6 @@ public class PrintOrderController {
         XWPFRun run;
         int fontSize = 12;
         paragraph = document.createParagraph();
-//        paragraph.setBorderBottom(Borders.BASIC_WIDE_MIDLINE);
-//        paragraph.setBorderTop(Borders.BASIC_WIDE_MIDLINE);
-//        paragraph.setBorderLeft(Borders.BASIC_WIDE_MIDLINE);
-//        paragraph.setBorderRight(Borders.BASIC_WIDE_MIDLINE);
         paragraph.setAlignment(ParagraphAlignment.LEFT);
 
         run = paragraph.createRun();
@@ -124,8 +141,9 @@ public class PrintOrderController {
         int fontSize = 12;
         XWPFParagraph paragraph;
         XWPFRun run;
+        XWPFTable table = document.createTable();
+        table.setWidth("100%");
         paragraph = document.createParagraph();
-//        paragraph.setBorderBottom(Borders.BALLOONS_3_COLORS);
         paragraph.setAlignment(ParagraphAlignment.LEFT);
 
         run = paragraph.createRun();
@@ -180,6 +198,29 @@ public class PrintOrderController {
         run.setText(dateFormat.format(new Date(order.getPayDate().getTime())));
         run.setFontSize(fontSize);
         run.setColor("FF0000");
+        
+        // Add rows and cells to the table
+        addTableRow(table, "Tổng tiền:", formatter.format(order.getTotalAmount()), fontSize);
+        addTableRow(table, "Giảm giá:", order.getDiscount() + "%", fontSize);
+        addTableRow(table, "Phải thanh toán:", formatter.format(order.getFinalAmount()), fontSize);
+        addTableRow(table, "Đã thanh toán:", formatter.format(order.getPaidAmount()), fontSize);
+        addTableRow(table, "Tiền thừa:", formatter.format(order.getFinalAmount() - order.getPaidAmount()), fontSize);
+        addTableRow(table, "Ngày thanh toán:", dateFormat.format(new Date(order.getPayDate().getTime())), fontSize);
+    }
+    
+    
+    private void addTableRow(XWPFTable table, String label, String value, int fontSize) {
+        XWPFTableRow row = table.createRow();
+        XWPFTableCell cell1 = row.getCell(0);
+        XWPFRun run1 = cell1.getParagraphs().get(0).createRun();
+        run1.setText(label);
+        run1.setFontSize(fontSize);
+
+        XWPFTableCell cell2 = row.addNewTableCell();
+        XWPFRun run2 = cell2.getParagraphs().get(0).createRun();
+        run2.setText(value);
+        run2.setFontSize(fontSize);
+        run2.setColor("FF0000");
     }
 
     public void createFooter() {
@@ -188,7 +229,7 @@ public class PrintOrderController {
         paragraph = document.createParagraph();
         paragraph.setAlignment(ParagraphAlignment.RIGHT);
         run = paragraph.createRun();
-        run.setText("Cảm ơn quý khách!Hẹn gặp lại!");
+        run.setText("Cảm ơn quý khách! Hẹn gặp lại!");
         run.setItalic(true);
         run.setFontSize(10);
     }
@@ -206,5 +247,4 @@ public class PrintOrderController {
             Desktop.getDesktop().open(orderFile);
         }
     }
-
 }
