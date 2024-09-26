@@ -38,6 +38,8 @@ public class ShipmentPopupController {
             shipment.setIdOrder(idOrder);
             shipment.setCustomer(customerDao.getAll().get(0));
             shipment.setStatus(ShipmentStatus.TOPAY);
+            shipment.setShipperName("Nguyen Van B");
+            shipment.setShipperPhoneNumber("0981854673");
             shipmentDao.save(shipment);
             edit(view, idOrder, sc, ec);
         } catch (Exception e) {
