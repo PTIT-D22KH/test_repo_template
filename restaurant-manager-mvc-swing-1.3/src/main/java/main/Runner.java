@@ -11,15 +11,15 @@ import views.LoginView;
  */
 public class Runner {
 
-    private static Employee session;
-
-    public static Employee getSession() {
-        return session;
-    }
-
-    public static void setSession(Employee session) {
-        Runner.session = session;
-    }
+//    private static Employee session;
+//
+//    public static Employee getSession() {
+//        return session;
+//    }
+//
+//    public static void setSession(Employee session) {
+//        Runner.session = session;
+//    }
 
     public static void main(String[] args) {
         //Set up look and feel
