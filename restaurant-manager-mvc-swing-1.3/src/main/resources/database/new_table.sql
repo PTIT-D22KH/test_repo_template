@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
     `phoneNumber` varchar(20) NOT NULL DEFAULT '',
     `startDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `permission` varchar(50) NOT NULL COMMENT 'manager-quản lý\r\nstaff-nhân viên\r\ninactive-nghỉ việc',
+    `salary` int NOT NULL,
     PRIMARY KEY (`employeeId`)
 );
 

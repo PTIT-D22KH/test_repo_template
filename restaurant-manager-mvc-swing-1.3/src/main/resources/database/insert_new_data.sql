@@ -15,12 +15,12 @@ INSERT INTO `table` (`tableId`, `name`, `status`) VALUES
 (11, 'Bàn 11', 'free'),
 (15, 'Bàn 12', 'free');
 
-INSERT INTO `employee` (`employeeId`, `username`, `password`, `name`, `phoneNumber`, `startDate`, `permission`) VALUES
-(1, 'admin', 'admin', 'Admin', '0911175581', '2020-11-23 17:00:00', 'manager'),
-(2, 'nhanvien', '2', 'Tea', '0911175581', '2020-11-24 05:15:08', 'staff'),
-(5, 'cuong', 'cuong12345', 'Trần Đức Cường', '0911175582', '2020-12-16 14:11:54', 'manager'),
-(6, 'anh', 'anh12345', 'Đỗ Tuấn Anh', '12324123', '2020-12-16 14:21:20', 'manager'),
-(7, 'son', 'son12345', 'Nguyễn Lam Sơn', '123', '2020-12-16 14:22:12', 'manager'),
+INSERT INTO `employee` (`employeeId`, `username`, `password`, `name`, `phoneNumber`, `startDate`, `permission`, `salary`) VALUES
+(1, 'admin', 'admin', 'Admin', '0911175581', '2020-11-23 17:00:00', 'manager', 10600000),
+(2, 'nhanvien', '2', 'Tea', '0911175581', '2020-11-24 05:15:08', 'staff', 0),
+(5, 'cuong', 'cuong12345', 'Trần Đức Cường', '0911175582', '2020-12-16 14:11:54', 'manager', 0),
+(6, 'anh', 'anh12345', 'Đỗ Tuấn Anh', '12324123', '2020-12-16 14:21:20', 'manager', 0),
+(7, 'son', 'son12345', 'Nguyễn Lam Sơn', '123', '2020-12-16 14:22:12', 'manager', 0),
 (27, 'karma', '1', 'Milk', '1', '2020-12-23 16:52:39', 'staff');
 
 INSERT INTO `food_category` (`foodCategoryId`, `name`, `slug`) VALUES
