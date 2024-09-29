@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
     `startDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `permission` varchar(50) NOT NULL COMMENT 'manager-quản lý\r\nstaff-nhân viên\r\ninactive-nghỉ việc',
     `salary` int NOT NULL,
-    PRIMARY KEY (`employeeId`)
+    PRIMARY KEY (`employeeId`),
 );
 
 CREATE TABLE IF NOT EXISTS `food_category` (
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `order` (
     `type` varchar(45) NOT NULL DEFAULT 'local' COMMENT 'local - tại quán\nonline - đặt online',
     `status` varchar(45) NOT NULL DEFAULT 'unpaid' COMMENT 'unpaid - chưa thanh toán\npaid - đã thanh toán',
     `orderDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `payDate` TIMESTAMP NULL,
+    `payDate` TIMESTAMP NULL DEFAULT NULL,
     `paidAmount` bigint NULL DEFAULT 0,
     `rebate` bigint NOT NULL DEFAULT 0,
     `totalAmount` bigint NOT NULL DEFAULT 0,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `shipment` (
     `employeeId` int NOT NULL,
     `status` varchar(45) NOT NULL DEFAULT 'topay' COMMENT 'topay - chờ xác nhận\ntoship - chờ lấy hàng\ntoreceive - đang giao\ncompleted - hoàn thành\ncancelled - đã hủy',
     `startDate` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    `endDate` TIMESTAMP NULL,
+    `endDate` TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (`orderId`),
     FOREIGN KEY (`customerId`) REFERENCES `customer` (`customerId`),
     FOREIGN KEY (`orderId`) REFERENCES `order` (`orderId`),
