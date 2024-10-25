@@ -48,7 +48,7 @@ public class AboutView extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 680, Short.MAX_VALUE)
+            .addGap(0, 800, Short.MAX_VALUE)
         );
 
         add(jPanel1, java.awt.BorderLayout.LINE_START);
@@ -90,7 +90,7 @@ public class AboutView extends javax.swing.JPanel {
                     .addComponent(jLabel1)
                     .addComponent(jLabel6)
                     .addComponent(jLabel5))
-                .addContainerGap(477, Short.MAX_VALUE))
+                .addContainerGap(586, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

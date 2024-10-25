@@ -54,6 +54,7 @@ public class SideBarController {
             menuItems.add(item);
             item.setActive(false);
             panelSideBar.add(item);
+            panelSideBar.setVisible(true);
             ArrayList<MenuItem> subMenus = item.getSubMenu();
             for (MenuItem subMenu : subMenus) {
                 addMenu(subMenu);

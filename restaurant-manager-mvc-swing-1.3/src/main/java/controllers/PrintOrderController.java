@@ -22,6 +22,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import utils.LoadConfig;
 
 public class PrintOrderController {
 
@@ -39,16 +40,11 @@ public class PrintOrderController {
     }
 
     private void loadConfig() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            Properties prop = new Properties();
-            if (input == null) {
-                System.out.println("Sorry, unable to find config.properties");
-                return;
-            }
-            prop.load(input);
-            orderFilePath = prop.getProperty("orderFilePath");
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        LoadConfig cfgLoader = LoadConfig.getIntanse();
+        try {
+            orderFilePath = cfgLoader.getProperty("orderFilePath");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -121,84 +117,45 @@ public class PrintOrderController {
         XWPFParagraph paragraph;
         XWPFRun run;
         int fontSize = 14;
-        paragraph = document.createParagraph();
-        paragraph.setAlignment(ParagraphAlignment.LEFT);
-        paragraph.setBorderTop(Borders.BIRDS);
-        paragraph.setBorderBottom(Borders.BIRDS);
-        run = paragraph.createRun();
-        run.addBreak();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+
+        // Create a table for order items
+        XWPFTable table = document.createTable();
+        table.setWidth("100%");
+
+        // Create header row
+        XWPFTableRow headerRow = table.getRow(0);
+        createTableCell(headerRow.getCell(0), "Food Item", fontSize, true);
+        createTableCell(headerRow.addNewTableCell(), "Topping", fontSize, true);
+        createTableCell(headerRow.addNewTableCell(), "Quantity", fontSize, true);
+        createTableCell(headerRow.addNewTableCell(), "Unit", fontSize, true);
+        createTableCell(headerRow.addNewTableCell(), "Amount (VND)", fontSize, true);
+
+        // Add order items to the table
         for (OrderItem orderItem : orderItems) {
-            FoodItem food = orderItem.getFoodItem(), topping = orderItem.getToppingItem();
-            run = paragraph.createRun();
-            run.setFontSize(fontSize);
-            run.setBold(true);
-            run.setText(String.format("%s(%s)          %d(%s)          %dVND", food.getName(), topping.getName(), orderItem.getQuantity(), food.getUnitName(), orderItem.getAmount()));
-            run.addBreak();
+            FoodItem food = orderItem.getFoodItem();
+            FoodItem topping = orderItem.getToppingItem();
+            XWPFTableRow row = table.createRow();
+            createTableCell(row.getCell(0), food.getName(), fontSize, false);
+            createTableCell(row.getCell(1), topping.getName(), fontSize, false);
+            createTableCell(row.getCell(2), String.valueOf(orderItem.getQuantity()), fontSize, false);
+            createTableCell(row.getCell(3), food.getUnitName(), fontSize, false);
+            createTableCell(row.getCell(4), decimalFormat.format(orderItem.getAmount()), fontSize, false);
         }
+    }
+
+    private void createTableCell(XWPFTableCell cell, String text, int fontSize, boolean isBold) {
+        XWPFRun run = cell.getParagraphs().get(0).createRun();
+        run.setText(text);
+        run.setFontSize(fontSize);
+        run.setBold(isBold);
     }
 
     public void createPaidInfo(Order order) {
         int fontSize = 12;
-        XWPFParagraph paragraph;
-        XWPFRun run;
         XWPFTable table = document.createTable();
         table.setWidth("100%");
-        paragraph = document.createParagraph();
-        paragraph.setAlignment(ParagraphAlignment.LEFT);
 
-        run = paragraph.createRun();
-        run.setText("Tổng tiển: ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(formatter.format(order.getTotalAmount()));
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        run.addBreak();
-
-        run = paragraph.createRun();
-        run.setText("Giảm giá: ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(order.getDiscount() + "%");
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        run.addBreak();
-
-        run = paragraph.createRun();
-        run.setText("Phải thanh toán: ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(formatter.format(order.getFinalAmount()));
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        run.addBreak();
-
-        run = paragraph.createRun();
-        run.setText("Đã thanh toán: ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(formatter.format(order.getPaidAmount()));
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        run.addBreak();
-
-        run = paragraph.createRun();
-        run.setText("Tiền thừa: ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(formatter.format(order.getFinalAmount() - order.getPaidAmount()));
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        run.addBreak();
-
-        run = paragraph.createRun();
-        run.setText("Ngày thanh toán ");
-        run.setFontSize(fontSize);
-        run = paragraph.createRun();
-        run.setText(dateFormat.format(new Date(order.getPayDate().getTime())));
-        run.setFontSize(fontSize);
-        run.setColor("FF0000");
-        
         // Add rows and cells to the table
         addTableRow(table, "Tổng tiền:", formatter.format(order.getTotalAmount()), fontSize);
         addTableRow(table, "Giảm giá:", order.getDiscount() + "%", fontSize);
